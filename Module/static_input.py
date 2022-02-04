@@ -12,31 +12,23 @@ class Dense(tf.Module):
             self.b = tf.Variable(tf.zeros([out_features]), name='b')
 
     @tf.function
-    def __call__(self, x):
-        y = tf.matmul(x, self.w) + self.b
-        if self.activation == 'softmax':
-            return tf.nn.softmax(y)
-        elif self.activation == 'relu':
-            return tf.nn.relu(y)
-        elif self.activation is None:
-            return y
-        else:
-            raise NotImplementedError
+    def __call__(self, x, activation):
+        return activation(tf.matmul(x, self.w) + self.b)
 
 
 class SimpleDNN(tf.Module):
     def __init__(self, name):
         super().__init__(name=name)
 
-        self.dense_1 = Dense(in_features=784, out_features=256, activation='relu')
-        self.dense_2 = Dense(in_features=256, out_features=256, activation='relu')
-        self.output = Dense(in_features=256, out_features=10, activation='softmax')
+        self.dense_1 = Dense(in_features=784, out_features=256)
+        self.dense_2 = Dense(in_features=256, out_features=256)
+        self.output = Dense(in_features=256, out_features=10)
 
     @tf.function
     def __call__(self, x):
-        x = self.dense_1(x)
-        x = self.dense_2(x)
-        x = self.output(x)
+        x = self.dense_1(x, activation=tf.nn.relu)
+        x = self.dense_2(x, activation=tf.nn.relu)
+        x = self.output(x, activation=tf.nn.softmax)
         return x
 
 

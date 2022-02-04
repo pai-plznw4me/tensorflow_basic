@@ -17,15 +17,7 @@ class Dense(tf.Module):
             self.b = tf.Variable(tf.zeros([self.out_features]), name='b')
             self.is_built = True
 
-        y = tf.matmul(x, self.w) + self.b
-        if activation == 'softmax':
-            return tf.nn.softmax(y)
-        elif activation == 'relu':
-            return tf.nn.relu(y)
-        elif activation is None:
-            return y
-        else:
-            raise NotImplementedError
+        return activation(tf.matmul(x, self.w) + self.b)
 
 
 class SimpleDNN(tf.Module):
@@ -38,9 +30,9 @@ class SimpleDNN(tf.Module):
 
     @tf.function
     def __call__(self, x):
-        x = self.dense_1(x, activation='relu')
-        x = self.dense_2(x, activation='relu')
-        x = self.output(x, activation='softmax')
+        x = self.dense_1(x, activation=tf.nn.relu)
+        x = self.dense_2(x, activation=tf.nn.relu)
+        x = self.output(x, activation=tf.nn.softmax)
         return x
 
 
