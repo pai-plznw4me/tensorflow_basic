@@ -1,4 +1,4 @@
-from tensorflow.keras.layers import Layer
+from tensorflow.keras.layers import Layer, Input
 import tensorflow as tf
 from tensorflow.keras.datasets.mnist import load_data
 import numpy as np
@@ -19,11 +19,22 @@ class Dense(Layer):
         return activation(tf.matmul(inputs, self.w) + self.b)
 
 
-class DNN(tf.keras.Model):
+class DNN1(tf.keras.Model):
     def __init__(self, name=None, **kwargs):
         super().__init__(**kwargs)
         self.dense_1 = Dense(256)
         self.dense_2 = Dense(256)
+
+    def call(self, x):
+        x = self.dense_1(x, activation=tf.nn.relu)
+        return self.dense_2(x, activation=tf.nn.relu)
+
+
+class DNN2(tf.keras.Model):
+    def __init__(self, name=None, **kwargs):
+        super().__init__(**kwargs)
+        self.dense_1 = Dense(256)
+        self.dense_2 = Dense(10)
 
     def call(self, x):
         x = self.dense_1(x, activation=tf.nn.relu)
@@ -37,8 +48,14 @@ if __name__ == '__main__':
     batch_xs = (train_xs[:6] / 255.).astype(np.float32)
 
     dense = Dense(256, name='dynamic')
-    print(dense(batch_xs, tf.nn.relu))
 
     # DNN Model
-    dnn = DNN('dynamic dnn')
-    print(dnn(batch_xs))
+    input_ = Input(shape=(784,))
+    dnn1 = DNN1('dynamic_dnn_1')
+    dnn2 = DNN2('dynamic_dnn_2')
+
+    z1 = dnn1(batch_xs)
+    z2 = dnn2(z1)
+    print(z2)
+
+

@@ -42,3 +42,13 @@ if __name__ == '__main__':
     # DNN Model
     dnn = DNN('dynamic dnn')
     print(dnn(batch_xs))
+
+    #
+    print(dnn.get_weights())
+    dnn.set_weights(dnn.get_weights())
+    print(dnn.layers)
+    for layer in dnn.layers:
+        print(layer.name)
+    print(dnn.get_layer('dense'))
+
+    print(dnn.trainable_weights)

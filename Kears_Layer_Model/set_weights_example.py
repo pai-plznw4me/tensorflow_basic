@@ -36,9 +36,24 @@ if __name__ == '__main__':
     batch_ys = train_ys[:6]
     batch_xs = (train_xs[:6] / 255.).astype(np.float32)
 
+    # Manipulate weights at layer level
+    # Get layer weights
     dense = Dense(256, name='dynamic')
-    print(dense(batch_xs, tf.nn.relu))
+    dense(batch_xs, tf.nn.relu)
+    dense_weight = dense.get_weights()[0]
+    dense_bias = dense.get_weights()[1]
 
-    # DNN Model
-    dnn = DNN('dynamic dnn')
-    print(dnn(batch_xs))
+    # Set layer weights
+    dense.set_weights([np.zeros_like(dense_weight), np.ones_like(dense_bias)])
+
+    # Manipulate weights at Model level
+    # Get weights in model
+    dnn = DNN(name='dynamic')
+    _ = dnn(batch_xs)  # weights 을 생성하기 위해서는 build function 을 호출해야 함
+    dense_variables = dnn.get_weights()
+    print(dense_weight)
+    print(dense_bias)
+
+    # Set weights zero in model
+    dnn.set_weights([np.zeros_like(var) for var in dense_variables])
+
